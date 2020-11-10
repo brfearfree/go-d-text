@@ -4,7 +4,7 @@ import (
 "time"
 )
 
-func spiner(ch chan string, p int) {
+func Spiner(ch chan string, p int) {
 	x := "-"
 	for {
 		ch <- x
