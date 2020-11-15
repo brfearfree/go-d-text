@@ -5,37 +5,36 @@ import (
 )
 
 func Start(element string, ch chan string, p int) chan bool{
-	controlChannel := make(chan bool)
+	ctrlCh := make(chan bool)
 	switch element {
 	case "spinner":
-			go Spinner(ch, p, controlChannel)
+			go Spinner(ch, p, ctrlCh)
 	default:
 	}
-	return controlChannel
+	return ctrlCh
 }
 
-func Spinner(ch chan string, p int, outCh chan bool){
+func Spinner(outCh chan string, p int, ctrlCh chan bool){
 	x := "-"
 	for {
+		moment := time.After(time.Duration(p) * time.Millisecond);
 
 		select{
-		case <- outCh:
-			ch <- ""
+		case <- ctrlCh:
+			outCh <- ""
 			return;
-		default:
+		case <- moment:
+			outCh <- x
+			switch x {
+			case "-":
+				x = "\\"
+			case "\\":
+				x = "|"
+			case "|":
+				x = "/"
+			case "/":
+				x = "-"
+			}
 		}
-
-		ch <- x
-		switch x {
-		case "-":
-			x = "\\"
-		case "\\":
-			x = "|"
-		case "|":
-			x = "/"
-		case "/":
-			x = "-"
-		}
-		time.Sleep(time.Duration(p) * time.Millisecond)
 	}
 }
